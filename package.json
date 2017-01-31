@@ -1,0 +1,25 @@
+{
+  "name": "dx-lab",
+  "version": "1.1.0",
+  "description": "State of the art web development boilerplate for DX projects.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/turbowars/dx-lab.git"
+  },
+  "keywords": [
+    "dx",
+    "lab",
+    "experiments",
+    "dheeraj"
+  ],
+  "author": "Dheeraj <turbowars@gmail.com> (http://www.cosmicbaba.com)",
+  "license": "WTFPL",
+  "bugs": {
+    "url": "https://github.com/turbowars/dx-lab/issues"
+  },
+  "homepage": "https://github.com/turbowars/dx-lab#readme"
+}
