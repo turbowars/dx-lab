@@ -1,0 +1,44 @@
+{
+  // tsconfig.json configures the TypeScript compiler (tsc). It controls how
+  // types are checked and what JS the type-checker assumes exists. NOTE: the
+  // actual build is done by tsup — tsc here is used for type-checking only
+  // (`pnpm typecheck` runs `tsc --noEmit`). This file supports // comments
+  // because it's JSONC, the format TypeScript reads.
+  "compilerOptions": {
+    // --- Output / language level ----------------------------------------
+    "target": "ES2022", // JS feature level we assume the runtime supports.
+    "module": "ESNext", // Use modern ES module syntax (import/export).
+    "moduleResolution": "Bundler", // Resolve imports the way bundlers do.
+    "lib": ["ES2022"], // Built-in APIs available (no DOM — this is a Node lib).
+    "types": ["vitest/globals"], // Make `describe`/`it`/`expect` types global.
+
+    // --- Strictness (catch bugs at compile time) ------------------------
+    "strict": true, // Turn on ALL the strict type-checking flags at once.
+    "noUncheckedIndexedAccess": true, // arr[i] is `T | undefined`, forcing you to check.
+    "noImplicitOverride": true, // Must write `override` when overriding a method.
+    "noFallthroughCasesInSwitch": true, // Error on a `case` that forgets `break`.
+    "forceConsistentCasingInFileNames": true, // "./Foo" and "./foo" aren't the same file.
+
+    // --- Declaration files (.d.ts) --------------------------------------
+    "declaration": true, // Emit type declarations (tsup uses this setting too).
+    "declarationMap": true, // Map .d.ts back to source for "go to definition".
+    "sourceMap": true, // Emit .map files for debugging.
+
+    // --- Interop / module behavior --------------------------------------
+    "esModuleInterop": true, // Smooth over CommonJS ↔ ESM default-import quirks.
+    "resolveJsonModule": true, // Allow `import data from "./x.json"`.
+    "isolatedModules": true, // Ensure each file can be compiled alone (bundler-safe).
+    "verbatimModuleSyntax": true, // Keep import/export exactly as written (no surprises).
+    "skipLibCheck": true, // Don't type-check dependencies' .d.ts files (faster).
+
+    // --- Where files go -------------------------------------------------
+    "outDir": "dist", // If tsc ever emits, it goes here (tsup uses dist too).
+    "rootDir": "src" // Source root; keeps dist mirroring src's structure.
+  },
+
+  // Only type-check files under src/.
+  "include": ["src"],
+
+  // Never type-check installed packages or build output.
+  "exclude": ["node_modules", "dist"]
+}

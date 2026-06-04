@@ -1,25 +1,58 @@
 {
   "name": "dx-lab",
   "version": "1.1.0",
-  "description": "State of the art web development boilerplate for DX projects.",
-  "main": "index.js",
+  "description": "Batteries-included TypeScript library boilerplate for DX projects.",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist"],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "pnpm@10.18.2",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "check": "pnpm run lint && pnpm run typecheck && pnpm run test",
+    "prepublishOnly": "pnpm run build",
+    "release": "changeset publish",
+    "version-packages": "changeset version"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/turbowars/dx-lab.git"
   },
-  "keywords": [
-    "dx",
-    "lab",
-    "experiments",
-    "dheeraj"
-  ],
+  "keywords": ["dx", "lab", "boilerplate", "typescript", "starter", "template"],
   "author": "Dheeraj <turbowars@gmail.com> (http://www.cosmicbaba.com)",
-  "license": "WTFPL",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/turbowars/dx-lab/issues"
   },
-  "homepage": "https://github.com/turbowars/dx-lab#readme"
+  "homepage": "https://github.com/turbowars/dx-lab#readme",
+  "pnpm": {
+    "onlyBuiltDependencies": ["@biomejs/biome", "esbuild"]
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@changesets/cli": "^2.27.11",
+    "@vitest/coverage-v8": "^2.1.8",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
 }

@@ -1,0 +1,60 @@
+# Release workflow — automates publishing to npm using Changesets.
+#
+# How it works in two passes:
+#   Pass 1: You merge a PR that contains a changeset file. This workflow opens
+#           a "Version Packages" PR that bumps the version + updates CHANGELOG.
+#   Pass 2: You merge THAT PR. This workflow runs again, sees no pending
+#           changesets, and publishes the new version to npm.
+name: Release
+
+on:
+  push:
+    branches: [master] # Only release from master.
+
+# If two pushes land quickly, cancel/queue so releases never overlap.
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    # Permissions this job needs:
+    permissions:
+      contents: write # Push the version-bump commit / create tags.
+      pull-requests: write # Open the "Version Packages" PR.
+      id-token: write # Enable npm provenance (verifiable publish origin).
+
+    steps:
+      # 1. Get the code.
+      - uses: actions/checkout@v4
+
+      # 2. Install pnpm.
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      # 3. Install Node, and point npm at the public registry so publish works.
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      # 4. Install locked dependencies.
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # 5. The Changesets action decides which pass we're in:
+      #    - pending changesets exist → run `version` and open the bump PR
+      #    - none pending            → run `publish` to ship to npm
+      - name: Create Release Pull Request or Publish to npm
+        uses: changesets/action@v1
+        with:
+          publish: pnpm run release # Command that publishes (changeset publish).
+          version: pnpm run version-packages # Command that bumps versions.
+        env:
+          # Provided automatically by GitHub for repo operations.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # You must add this secret yourself in repo Settings → Secrets.
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

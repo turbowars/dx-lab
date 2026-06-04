@@ -1,0 +1,53 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+
+  // Biome is one tool that does BOTH linting (catching likely bugs / bad
+  // patterns) and formatting (consistent style). It replaces ESLint + Prettier
+  // and is much faster. Biome reads comments in this file, so we annotate it.
+
+  // Let Biome understand git and respect ignore files.
+  "vcs": {
+    "enabled": true, // Turn on git awareness.
+    "clientKind": "git", // We use git (the only supported option today).
+    "useIgnoreFile": true // Skip anything already listed in .gitignore.
+  },
+
+  // Extra paths Biome should never touch (on top of .gitignore).
+  "files": {
+    // dist = build output, coverage = test reports, node_modules = deps,
+    // .claude = local editor/agent settings, .changeset = strict-JSON files.
+    "ignore": ["dist", "coverage", "node_modules", ".claude", ".changeset"]
+  },
+
+  // How code gets formatted.
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space", // Spaces, not tabs.
+    "indentWidth": 2, // 2 spaces per indent level.
+    "lineWidth": 100 // Wrap lines past 100 characters.
+  },
+
+  // Automatically sort/clean up import statements.
+  "organizeImports": {
+    "enabled": true
+  },
+
+  // The linting rules.
+  "linter": {
+    "enabled": true,
+    "rules": {
+      // Use Biome's curated "recommended" rule set — a sensible default that
+      // flags real problems without being noisy. Add overrides here later.
+      "recommended": true
+    }
+  },
+
+  // JavaScript/TypeScript-specific formatting choices.
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double", // "double" quotes over 'single'.
+      "semicolons": "always", // Always end statements with a semicolon.
+      "trailingCommas": "all" // Trailing commas everywhere (cleaner diffs).
+    }
+  }
+}

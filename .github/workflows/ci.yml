@@ -1,0 +1,55 @@
+# CI workflow — runs on GitHub's servers to verify every change is healthy.
+# It must pass before you trust a branch. Mirrors what `pnpm check` + `pnpm
+# build` do locally, but across multiple Node.js versions.
+name: CI
+
+# WHEN this workflow runs:
+on:
+  push:
+    branches: [master] # On every push to master.
+  pull_request:
+    branches: [master] # And on every PR targeting master.
+
+jobs:
+  build:
+    # The virtual machine GitHub gives us to run on.
+    runs-on: ubuntu-latest
+
+    # Run the WHOLE job once per Node version below, in parallel. This proves
+    # the library works on every Node release we claim to support.
+    strategy:
+      matrix:
+        node-version: [18, 20, 22]
+
+    # Steps run top-to-bottom; if any fails, the job fails.
+    steps:
+      # 1. Pull the repo's code onto the VM.
+      - uses: actions/checkout@v4
+
+      # 2. Install pnpm (reads the version from package.json's packageManager).
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      # 3. Install the matrix's Node version, and cache pnpm's store so
+      #    installs are fast on later runs.
+      - name: Setup Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: pnpm
+
+      # 4. Install deps EXACTLY as locked. `--frozen-lockfile` fails if
+      #    pnpm-lock.yaml is out of date — no surprise version drift in CI.
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # 5–8. The actual quality gates. Each is its own step so a failure
+      #      tells you precisely which check broke.
+      - name: Lint
+        run: pnpm run lint
+      - name: Typecheck
+        run: pnpm run typecheck
+      - name: Test
+        run: pnpm run test
+      - name: Build
+        run: pnpm run build
